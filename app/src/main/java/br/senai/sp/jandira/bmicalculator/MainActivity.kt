@@ -14,11 +14,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,26 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.senai.sp.jandira.bmicalculator.calcs.bmiCalculate
+import br.senai.sp.jandira.bmicalculator.calcs.getBmiClassification
+import br.senai.sp.jandira.bmicalculator.calcs.getBmiClassificationColor
 import br.senai.sp.jandira.bmicalculator.ui.theme.BMICalculatorTheme
-import java.time.LocalDate
-import kotlin.math.pow
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /**val p = Product()
-        p.id = 100
-        p.name = "mouse"
-        p.price = 230.0
-
-        var x = p.addName()
-        var v = p.listProducts()
-
-        val c = Client(
-        id = 100,
-        name ="Pedro",
-        birthDay = LocalDate.of(1999, 5,13))*/
 
         setContent {
             BMICalculatorTheme {
@@ -70,6 +58,10 @@ fun CalculatorScreen() {
     var bmiState = rememberSaveable {
         mutableStateOf("")
     }
+    var bmiClassificationState = rememberSaveable {
+        mutableStateOf("")
+    }
+    var context = LocalContext.current
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -142,13 +134,14 @@ fun CalculatorScreen() {
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
                     onClick = {
-                        var bmi = 0.0
-                        var w = weightState.value.toDouble()
-                        var h = heightState.value.toDouble()
-
-                        bmi = w / (h/100).pow(2)
-
-                        bmiState.value = bmi.toString()
+                        val bmi = bmiCalculate (
+                        weight = weightState.value.toDouble(),
+                        height = heightState.value.toDouble()
+                        )
+                        bmiState.value = String.format("%2f",
+                            bmi)
+                        bmiClassificationState.value =
+                            getBmiClassification(bmi, context)
                     },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(Color(100, 185, 100))
@@ -176,7 +169,7 @@ fun CalculatorScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .height(150.dp),
-                    color = Color(79, 54, 232),
+                    color = getBmiClassificationColor(bmiState.value.toDouble()),
                     shape = RoundedCornerShape(
                         topStart = 32.dp,
                         topEnd = 32.dp
@@ -195,18 +188,18 @@ fun CalculatorScreen() {
                             color = Color.White
                         )
                         Text(
-                            text = "",
+                            text = bmiState.value,
                             fontSize = 40.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = stringResource(id = R.string.ideal),
+                            text = bmiClassificationState.value,
                             fontSize = 18.sp,
                             color = Color.White
                         )
 
-                        Row() {
+                        Row {
                             Button(onClick = { /*TODO*/ }) {
                                 Text(text = stringResource(id = R.string.reset))
 
