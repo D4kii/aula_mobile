@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BMI Calculator</string>
+    <string name="title">BMI CALCULATOR</string>
+    <string name="height_label">Sua altura em cm</string>
+    <string name="weight_label">Seu peso em Kg</string>
+    <string name="button_text">CALCULAR</string>
+    <string name="your_score">Pontuação</string>
+    <string name="reset">Limpar</string>
+    <string name="share">Compartilhar</string>
+    <string name="ideal">Parabéns, seu peso está ideal!</string>
+</resources>
